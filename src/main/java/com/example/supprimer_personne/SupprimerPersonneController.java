@@ -159,6 +159,7 @@ public class SupprimerPersonneController {
                 if (personne != null) {
                     personneDAO.supprimerPersonne(numCin);
                     refreshTableView(); // Update TableView after deletion
+                    refreshPhoneNumberTableView(); // Update phone number TableView after deletion
                     showConfirmationDialog("Personne supprimée avec succès!");
                 } else {
                     showAlert("Erreur", "La personne avec le numéro de CIN spécifié n'existe pas.");
@@ -303,42 +304,72 @@ public class SupprimerPersonneController {
     }
 
     @FXML
-    private void handleAddPhoneNumber(ActionEvent event) throws Exception {
-        int numCin = Integer.parseInt(numCinField.getText());
-        String phoneNumber = phoneNumberField.getText();
-        String phoneType = phoneTypeField.getText();
+    private void handleAddPhoneNumber(ActionEvent event) {
+        try {
+            int numCin = Integer.parseInt(numCinField.getText());
+            String phoneNumber = phoneNumberField.getText();
+            String phoneType = phoneTypeField.getText();
 
-        if (!phoneNumber.isEmpty() && !phoneType.isEmpty()) {
-            try (AnnuaireDAOImpl annuaireDAO = new AnnuaireDAOImpl(connexion)) {
-
-                // Check if the person with numCin exists
-                if (annuaireDAO.personExists(numCin)) {
-
-                    // Check if the phone number already exists
-                    if (!annuaireDAO.phoneNumberExists(numCin, phoneNumber)) {
-                        numTel newPhoneNumber = new numTel(numCin, phoneNumber, phoneType);
-                        annuaireDAO.ajouterNumTel(newPhoneNumber);
-                        showConfirmationDialog("Phone number added successfully!");
-                        refreshPhoneNumberTableView(); // Update TableView after insertion
+            if (!phoneNumber.isEmpty() && !phoneType.isEmpty()) {
+                try (AnnuaireDAOImpl annuaireDAO = new AnnuaireDAOImpl(connexion)) {
+                    if (annuaireDAO.personExists(numCin)) {
+                        if (!annuaireDAO.phoneNumberExists(numCin, phoneNumber)) {
+                            numTel newPhoneNumber = new numTel(numCin, phoneNumber, phoneType);
+                            annuaireDAO.ajouterNumTel(newPhoneNumber);
+                            showConfirmationDialog("Phone number added successfully!");
+                            refreshPhoneNumberTableView(); // Update TableView after insertion
+                        } else {
+                            showAlert("Error", "Phone number already exists for another CIN!");
+                        }
                     } else {
-                        showAlert("Error", "Phone number already exists!");
+                        showAlert("Error", "This person doesn't exist in the Annuaire.");
                     }
-
-                } else {
-                    showAlert("Error", "This person doesn't exist in the Annuaire.");
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    showAlert("Error", "Error adding phone number to the database.");
                 }
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-                showAlert("Error", "Error adding phone number to the database.");
+            } else {
+                showAlert("Error", "Please fill in all the fields.");
             }
-        } else {
-            showAlert("Error", "Please fill in all the fields.");
+        } catch (NumberFormatException e) {
+            showAlert("Error", "Invalid CIN number format.");
+        } catch (Exception e) {
+            showAlert("Error", "An unexpected error occurred: " + e.getMessage());
         }
     }
 
 
+    @FXML
+    private void handleUpdatePhoneNumber(ActionEvent event) {
+        try {
+            int numCin = Integer.parseInt(numCinField.getText());
+            String newPhoneNumber = phoneNumberField.getText();
+            String phoneType = phoneTypeField.getText();
+            numTel selectedPhoneNumber = phoneNumberTableView.getSelectionModel().getSelectedItem();
 
+            if (!newPhoneNumber.isEmpty() && !phoneType.isEmpty() && selectedPhoneNumber != null) {
+                try (AnnuaireDAOImpl annuaireDAO = new AnnuaireDAOImpl(connexion)) {
+                    if (annuaireDAO.personExists(numCin)) {
+                        numTel updatedPhoneNumber = new numTel(numCin, newPhoneNumber, phoneType);
+                        annuaireDAO.updateNumTel(updatedPhoneNumber, selectedPhoneNumber.getValeur());
+                        showConfirmationDialog("Phone number updated successfully!");
+                        refreshPhoneNumberTableView(); // Update TableView after update
+                    } else {
+                        showAlert("Error", "This person doesn't exist in the Annuaire.");
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    showAlert("Error", "Error updating phone number in the database.");
+                }
+            } else {
+                showAlert("Error", "Please fill in all the fields and select a phone number to update.");
+            }
+        } catch (NumberFormatException e) {
+            showAlert("Error", "Invalid CIN number format.");
+        } catch (Exception e) {
+            showAlert("Error", "An unexpected error occurred: " + e.getMessage());
+        }
+    }
 
     @FXML
     private void handleDeletePhoneNumber(ActionEvent event) {

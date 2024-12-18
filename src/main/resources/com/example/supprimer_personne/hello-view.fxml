@@ -137,14 +137,17 @@
 
                 <Label styleClass="form-label" text="Phone Type:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
                 <TextField fx:id="phoneTypeField" styleClass="form-field" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                <HBox alignment="CENTER" spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="5">
-                    <Button onAction="#handleAddPhoneNumber" text="Add Phone Number" styleClass="button2" GridPane.rowIndex="3" GridPane.columnIndex="0" />
-                    <!-- Add this button inside your form2-container VBox -->
-                    <Button onAction="#handleDeletePhoneNumber" text="Delete Phone Number" styleClass="action-button-delete" GridPane.rowIndex="4" GridPane.columnIndex="1" />
 
-
+                <!-- Buttons for Add, Update, and Delete Phone Number -->
+                <HBox alignment="CENTER" spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                    <Button onAction="#handleAddPhoneNumber" text="Add Phone Number" styleClass="button2" />
+                    <Button onAction="#handleUpdatePhoneNumber" text="Update Phone Number" styleClass="action-button-update" />
                 </HBox>
-                 <columnConstraints>
+                <HBox alignment="CENTER" spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                    <Button onAction="#handleDeletePhoneNumber" text="Delete Phone Number" styleClass="action-button-delete" />
+                </HBox>
+
+                <columnConstraints>
                     <ColumnConstraints />
                     <ColumnConstraints />
                 </columnConstraints>

@@ -156,5 +156,19 @@
 .button2:hover {
     -fx-background-color: #0056b3; /* Darker blue background color on hover for buttons in the second form */
 }
+.button2 {
+    -fx-background-color: #4CAF50;
+    -fx-text-fill: white;
+}
+
+.action-button-update {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+}
+
+.action-button-delete {
+    -fx-background-color: red;
+    -fx-text-fill: white;
+}
 
 
